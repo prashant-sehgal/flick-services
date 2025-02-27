@@ -108,7 +108,12 @@ movieSchema.pre('save', function (this: TypeMovie, next) {
 
 // Middleware: Convert genres to lowercase before saving
 movieSchema.pre('save', function (this: TypeMovie, next) {
-  if (!this.isModified('genres')) return next()
+  if (
+    !this.isModified('genres') ||
+    !this.genres.some((genre) => genre !== genre.toLowerCase())
+  )
+    return next()
+
   this.genres = this.genres.map((genre) => genre.toLowerCase())
   next()
 })
