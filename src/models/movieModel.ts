@@ -106,17 +106,43 @@ movieSchema.pre('save', function (this: TypeMovie, next) {
   next()
 })
 
-// Middleware: Convert genres to lowercase before saving
-movieSchema.pre('save', function (this: TypeMovie, next) {
-  if (
-    !this.isModified('genres') ||
-    !this.genres.some((genre) => genre !== genre.toLowerCase())
-  )
-    return next()
-
-  this.genres = this.genres.map((genre) => genre.toLowerCase())
+// Function to lowercase genres if modified
+const lowercaseGenres = function (
+  this: TypeMovie,
+  next: mongoose.CallbackWithoutResultAndOptionalError
+) {
+  if (this.genres && Array.isArray(this.genres)) {
+    this.genres = this.genres.map((genre: string) => genre.toLowerCase().trim())
+  }
   next()
+}
+
+// Middleware for save and create
+movieSchema.pre<TypeMovie>('save', function (next) {
+  if (this.isModified('genres')) {
+    lowercaseGenres.call(this, next)
+  } else {
+    next()
+  }
 })
+
+// Middleware for update operations
+const updateMiddleware = function (
+  this: any,
+  next: mongoose.CallbackWithoutResultAndOptionalError
+) {
+  const update = this.getUpdate()
+  if (update?.genres && Array.isArray(update.genres)) {
+    update.genres = update.genres.map((genre: string) =>
+      genre.toLowerCase().trim()
+    )
+  }
+  next()
+}
+
+movieSchema.pre('findOneAndUpdate', updateMiddleware)
+movieSchema.pre('updateOne', updateMiddleware)
+movieSchema.pre('updateMany', updateMiddleware)
 
 // Create and export the Movie model
 const Movie = mongoose.model('Movie', movieSchema)
