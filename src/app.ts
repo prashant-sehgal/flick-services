@@ -36,6 +36,11 @@ app.use(express.json())
 // Middleware to parse URL-encoded request bodies
 app.use(express.urlencoded({ extended: true }))
 
+app.use(function (req, res, next) {
+  console.log({ cookies: req.cookies })
+  next()
+})
+
 // Mount routers for different API endpoints
 app.use('/api/v1/movies', movieRouter) // Handles movie-related routes
 app.use('/api/v1/users', userRouter) // Handles user-related routes
