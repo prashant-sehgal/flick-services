@@ -105,8 +105,6 @@ export const authenticate = CatchAsync(async function (
     request.cookies['next-auth.session-token'] ||
     request.headers.authorization?.split(' ')[1]
 
-  console.log(token)
-
   if (!token)
     return next(
       new AppError('You are not authenticated to access these routes', 401)
