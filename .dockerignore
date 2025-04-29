@@ -1,0 +1,8 @@
+# Ignore dependencies installed via npm
+node_modules/
+
+# Ignore compiled JavaScript and TypeScript build files
+dist/
+
+# Ignore environment configuration files (contains sensitive data)
+.env
